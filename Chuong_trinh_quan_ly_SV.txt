@@ -1,0 +1,266 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+int cnt = 0;
+
+class SinhVien {
+private:
+    string msv;
+    string hoten,lop,address,birth;
+    double gpa;
+public:
+    SinhVien() {
+        msv = hoten = lop = address = birth = "";
+        gpa = 0;
+    }
+    SinhVien(string msv,string hoten,string lop,string address,string birth,double gpa) {
+        this->msv = msv; this->hoten = hoten; this->lop = lop;
+        this->address = address; this->birth = birth; this->gpa = gpa;
+    }
+
+    double getGpa(); string getMsv();  string getHoten();
+    string getLop(); string getAddress(); string getBirth();
+
+    void set_infor();
+    void print_infor();
+
+    void ChuanHoa();
+
+};
+vector <SinhVien> DS;
+
+double SinhVien::getGpa() {
+    return gpa;
+}
+string SinhVien::getMsv() {
+    return msv;
+}
+string SinhVien::getHoten() {
+    return  hoten;
+}
+string SinhVien::getLop() {
+    return lop;
+}
+string SinhVien::getAddress() {
+    return address;
+}
+string SinhVien::getBirth() {
+    return birth;
+}
+
+void SinhVien::ChuanHoa() {
+    // Chuan hoa ngay sinh:
+    if(birth[1] == '/') birth = "0" + birth;
+    if(birth[4] == '/') birth.insert(3,"0");
+    //Chuan hoa ho ten:
+    for(int i=0;i < hoten.length();i++) hoten[i] = tolower(hoten[i]);
+    stringstream ss(hoten);
+    string res = "";
+    string s = "";
+    while (ss >> s) {
+        s[0] = toupper(s[0]);
+        res += s + " ";
+    }
+    res.erase(res.size()-1);
+    hoten = res;
+}
+
+void SinhVien::set_infor() {
+    ++cnt;
+    msv = "SV" + string(5-to_string(cnt).length(),'0') + to_string(cnt);
+    cin.ignore();
+    cout << "Nhap vao ho ten cua SV: ";
+    getline(cin,hoten);
+    cout << "Nhap vao lop cua SV: ";
+    cin >> lop; cin.ignore();
+    cout << "Nhap vao dia chi cua SV: ";
+    getline(cin,address);
+    cout << "Nhap vao ngay thang nam sinh cua SV: ";
+    cin >> birth;
+    cout << "Nhap vao GPA cua SV: ";
+    cin >> gpa;
+    cout << "\n";
+}
+
+void SinhVien::print_infor() {
+    cout << "Ma sinh vien: " << msv << '\n'
+    << "Ho va ten: " << hoten << '\n'
+    << "Lop: " << lop << '\n'
+    << "Dia chi: " << address << '\n'
+    << "Ngay thang nam sinh: " << birth << '\n'
+    << "GPA: " << fixed << setprecision(2) <<  gpa << '\n';
+}
+
+void inDS() {
+    cout << "\nDanh sach cac sinh vien hien tai la: \n";
+    for(SinhVien x : DS) {
+        x.print_infor();
+    }
+    cout << '\n' << '\n';
+}
+
+void Tim_kiem_theo_ma() {
+    string ma;
+    bool check = false;
+    cout << "Nhap vao ma sinh vien can tim: "; cin >> ma;
+    for(int i=0;i<cnt;i++) {
+        if(DS[i].getMsv() == ma) {
+            cout << "Sinh vien can tim la: \n";
+            DS[i].print_infor(); check = true;
+            break;
+        }
+    }
+    if(!check) cout << "Not found!\n";
+}
+
+void Xoa_SV() {
+    string ten,ma;
+    cout << "Nhap vao MSV cua sinh vien can xoa: ";
+    cin >> ma;
+    for(int i=0;i < DS.size();i++) {
+        if(DS[i].getMsv() == ma) {
+            DS.erase(DS.begin()+i); --cnt;
+            cout << "Sinh vien nay da duoc xoa khoi danh sach\n";
+            return;
+        }
+    }
+    cout << "SV nay khong co trong danh sach\n";
+
+}
+
+
+bool cmp1(SinhVien x,SinhVien y) {
+    return x.getGpa() > y.getGpa();
+}
+void List_Top_GPA() {
+    cout << "Nhap vao so sinh vien can liet ke: \n";
+    int k; cin >> k;
+    vector <SinhVien> v(DS.begin(),DS.end());
+    sort(v.begin(),v.end(),cmp1);
+    cout << "Danh sach " << k << " Sinh vien co GPA cao nhat la: \n";
+    for(int i=0;i<k;i++) {
+        v[i].print_infor();
+    }
+}
+
+
+void ChuanHoa_all() {
+    for(int i=0;i < DS.size();i++) {
+        DS[i].ChuanHoa();
+    }
+    cout << "Danh sach sinh vien da duoc chuan hoa thanh cong\n\n";
+}
+
+//11/10/2006
+bool cmp2(SinhVien x,SinhVien y) {
+    //Dam bao ngay sinh da duoc chuan hoa
+    string s1 = x.getBirth();
+    string s2 = y.getBirth();
+    string n1 = s1.substr(0,2), t1 = s1.substr(3,2), na1 = s1.substr(6);
+    string n2 = s2.substr(0,2), t2 = s2.substr(3,2), na2 = s2.substr(6);
+    if(na1 != na2) return stoi(na1) > stoi(na2);
+    else if(t1 != t2) return stoi(t1) > stoi(t2);
+    return stoi(n1) > stoi(n2);
+}
+void sapxep_theo_ngaysinh() {
+    sort(DS.begin(),DS.end(),cmp2);
+}
+
+
+int main() {
+
+        cout << "                        Chuong trinh quan ly SV: \n";
+        cout << "**********************************OvO**********************************\n";
+        cout << "* 1: Them 1 SV vao danh sach                                          *\n";
+        cout << "* 2: Hien thi toan bo danh sach SV hien tai                           *\n";
+        cout << "* 3: Tim kiem sinh vien theo ma sinh vien                             *\n";
+        cout << "* 4: Liet ke k sinh vien co diem GPA cao nhat                         *\n";
+        cout << "* 5. Chuan hoa ngay sinh va ho ten cua sinh vien ve dang chuan        *\n";
+        cout << "* 6: Sap Xep sinh vien theo ngay sinh tang dan (tu tre xuong gia)     *\n";
+        cout << "* 7: Xoa bo 1 sinh vien theo msv                                      *\n";
+
+        cout << "* 0: Thoat chuong trinh                                               *\n";
+        cout << "***********************************************************************\n\n";
+
+
+    while (true) {
+
+        cout << "Nhap vao lua chon cua ban: ";
+        int opt; cin >> opt;
+
+        if(opt == 1) {
+            SinhVien sv;
+            cout << "Nhap vao cac thong tin cua SV can them vao: \n";
+            sv.set_infor();
+            DS.push_back(sv);
+        }
+        else if(opt == 2) {
+            inDS();
+        }
+        else if(opt == 3) {
+            Tim_kiem_theo_ma();
+        }
+        else if(opt == 4) {
+            List_Top_GPA();
+        }
+        else if(opt == 5) {
+            ChuanHoa_all();
+        }
+        else if(opt == 6) {
+            sapxep_theo_ngaysinh();
+        }
+        else if(opt == 7) {
+            Xoa_SV();
+        }
+        else if(opt == 0) {
+            cout << "Chuong trinh da ket thuc!\n";
+            break;
+        }
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+/*
+1
+Nguyen Van A
+CN1
+Ha Noi
+1/1/2006
+3.2
+1
+nguyen van B
+CN2
+Hai Phong
+02/2/2005
+2.9
+1
+Nguyen VAN c
+CN3
+Ha Noi
+11/2/2006
+3.0
+1
+Nguyen Van D
+CN3
+Nam Dinh
+1/2/3006
+3.4
+1
+Nguyen Van E
+CN1
+Ha Noi
+11/10/2006
+3.6
+
+*/
